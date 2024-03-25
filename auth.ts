@@ -1,3 +1,5 @@
+"use server";
+
 import NextAuth from 'next-auth';
 import { authConfig } from './auth.config';
 import Credentials from 'next-auth/providers/credentials';
@@ -6,6 +8,8 @@ import {sql} from '@vercel/postgres';
 import type { User } from '@/app/lib/definitions';
 import { getUser } from './app/lib/data';
 import bcrypt from 'bcrypt';
+import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 
 async function getUsername(email: string): Promise<User | undefined> {
     try {
@@ -38,6 +42,14 @@ export const { auth, signIn, signOut } = NextAuth({
             console.log('Invalid credentails');
             return null;
         },
-    })
-],
+    }),
+    GithubProvider({
+        clientId: process.env.GITHUB_ID,
+        clientSecret: process.env.GITHUB_SECRET,
+      }),
+    GoogleProvider({
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET
+        })
+    ],
 });
